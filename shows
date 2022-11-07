@@ -1,0 +1,32 @@
+# first i find a link of IMDB website 
+# with the help pandas and beatifulsoup i scrap a url and create a data set
+
+from bs4 import BeautifulSoup as bs
+import pandas as pd 
+import requests
+
+page=requests.get('https://www.imdb.com/chart/toptv/?ref_=nv_tvv_250').text
+
+soup=bs(page,'html.parser')
+
+data=soup.find('tbody',class_='lister-list').find_all('tr')
+
+name=[]
+rank=[]
+year=[]
+rating=[]
+
+
+for shows in data:
+    name.append(shows.find('td',class_='titleColumn').a.text.strip())
+    rank.append(shows.find('td',class_='titleColumn').get_text(strip=True)[0])
+    year.append(shows.find('td',class_='titleColumn').span.text.strip('()'))
+    rating.append(shows.find('td',class_='ratingColumn').strong.text)
+    
+final={"rank":rank,"Show name":name,"Release Date":year,"IMBD rating":rating}
+
+df=pd.DataFrame(final)
+
+# i am using head command for see data preview
+
+df.head()
